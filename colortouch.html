@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>colortouch blend 1.4</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+<style type="text/css">
+body { margin: 0px; overflow: hidden; }
+canvas { border: 0px solid black; }
+</style>
+<script type="text/javascript">
+var canvas;
+var w = 0;
+var h = 0;
+var timer;
+var updateStarted = false;
+var touches = [];
+function update() {
+	if (updateStarted) return;
+	updateStarted = true;
+	var nw = window.innerWidth;
+	var nh = window.innerHeight;
+
+	var i, len = touches.length;
+	for (i=0; i<len; i++) {
+		var touch = touches[i];
+        var px = touch.pageX;
+        var py = touch.pageY;
+	    var num ="#";
+        var zer ="00";
+                var ycomp = Math.floor(nh/256);
+	            var ypos = Math.floor(nh-py);
+	            var yvalue = 2*(Math.floor(ypos/ycomp)-128);
+	
+	            var xcomp = Math.floor(nw/256);
+	            var xpos = Math.floor(nw-px);
+	            var xvalue = 2*(Math.floor(xpos/xcomp)-128);
+	            var bgc = [];
+                var bgp = [];
+                var bg;
+                var color;
+                document.getElementById('p').style.lineHeight = nw - document.getElementById('p').style.lineHeight + "px";
+                document.getElementById('mix').style.lineHeight = nw - document.getElementById('mix').style.lineHeight + "px";
+                document.getElementById('top').style.lineHeight = nw - document.getElementById('top').style.lineHeight + "px";
+            if (touches.length == 1) {
+                // debug
+                var bg = document.body.style.background;
+                bgc = bg.split(",");
+                bgp = bg.split("(");
+                bgc[0] = bgc[0].replace("rgb(","");
+                bgc[2] = bgc[2].replace(")","");
+		// code to show hexadecimal color code
+                // document.getElementById('p').innerHTML = "#" + parseInt(bgc[0]).toString(16) + parseInt(bgc[1]).toString(16) + parseInt(bgc[2]).toString(16);
+                document.getElementById('p').innerHTML = document.getElementById('p').innerHTML.toLocaleUpperCase();
+    		    if (yvalue > 0 && xvalue > 0) {
+    		          document.body.style.background = bgp[0] + "(" + yvalue + "," + bgc[1] + "," + bgc[2] + ")";
+    	        } else if (yvalue > 0 && xvalue <= 0) {
+    		        xvalue = Math.abs(xvalue);
+    		        document.body.style.background = bgp[0] + "(" + bgc[0] + "," + yvalue + "," + bgc[2] + ")";
+    	        } else if (yvalue <= 0 && xvalue > 0) {
+    	            yvalue = Math.abs(yvalue);
+    	            document.body.style.background = bgp[0] + "(" + bgc[0] + "," + bgc[1] + "," + xvalue + ")";
+    	        } else {
+    	            xvalue = Math.abs(xvalue);
+    		        document.body.style.background = "rgb(" + xvalue + "," + xvalue + "," + xvalue + ")";
+    	        }
+            } else if (touches.length == 2) {
+                // debug
+                if (document.getElementById('mix').style.background) {
+                    bg = document.getElementById('mix').style.background;
+                } else {
+                    document.getElementById('mix').style.background = "rgb(255,255,255)";
+                    bg = document.getElementById('mix').style.background;
+                }
+                bgc = bg.split(",");
+                bgp = bg.split("(");
+                bgc[0] = bgc[0].replace("rgb(","");
+                bgc[2] = bgc[2].replace(")","");
+		// code to show hexadecimal color code
+                // document.getElementById('mix').innerHTML = "#" + parseInt(bgc[0]).toString(16) + parseInt(bgc[1]).toString(16) + parseInt(bgc[2]).toString(16) + " " + parseInt(document.getElementById('mix').style.opacity*100) + "%";
+                document.getElementById('mix').innerHTML = document.getElementById('mix').innerHTML.toLocaleUpperCase();
+        	    if (yvalue > 0 && xvalue > 0) {
+    		        document.getElementById('mix').style.background = bgp[0] + "(" + yvalue + "," + bgc[1] + "," + bgc[2] + ")" ;
+    	        } else if (yvalue > 0 && xvalue <= 0) {
+    		        xvalue = Math.abs(xvalue);
+    		        document.getElementById('mix').style.background = bgp[0] + "(" + bgc[0] + "," + yvalue + "," + bgc[2] + ")";
+    	        } else if (yvalue <= 0 && xvalue > 0) {
+    	            yvalue = Math.abs(yvalue);
+    	            document.getElementById('mix').style.background = bgp[0] + "(" + bgc[0] + "," + bgc[1] + "," + xvalue + ")";
+    	        } else {
+    	            xvalue = Math.abs(xvalue);
+    		        document.getElementById('mix').style.opacity = Math.round(((xvalue/2.56)/100)*100)/100;
+                }
+            } else {
+                // debug
+                if (document.getElementById('top').style.background) {
+                    bg = String(document.getElementById('top').style.background);
+                } else {
+                    document.getElementById('top').style.background = "rgb(255,255,255)";
+                    bg = document.getElementById('top').style.background;
+                }
+                bgc = bg.split(",");
+                bgp = bg.split("(");
+                bgc[0] = bgc[0].replace("rgb(","");
+                bgc[2] = bgc[2].replace(")","");
+		// code to show hexadecimal color code
+                // document.getElementById('top').innerHTML = "#" + parseInt(bgc[0]).toString(16) + parseInt(bgc[1]).toString(16) + parseInt(bgc[2]).toString(16) + " " + parseInt(document.getElementById('top').style.opacity*100) + "%";
+                document.getElementById('top').innerHTML = document.getElementById('top').innerHTML.toLocaleUpperCase();
+                if (yvalue > 0 && xvalue > 0) {
+    		        document.getElementById('top').style.background = bgp[0] + "(" + yvalue + "," + bgc[1] + "," + bgc[2] + ")";
+    	        } else if (yvalue > 0 && xvalue <= 0) {
+    		        xvalue = Math.abs(xvalue);
+    		        document.getElementById('top').style.background = bgp[0] + "(" + bgc[0] + "," + yvalue + "," + bgc[2] + ")";
+    	        } else if (yvalue <= 0 && xvalue > 0) {
+    	            yvalue = Math.abs(yvalue);
+    	            document.getElementById('top').style.background = bgp[0] + "(" + bgc[0] + "," + bgc[1] + "," + xvalue + ")";
+    	        } else {
+    	            xvalue = Math.abs(xvalue);
+    	            document.getElementById('top').style.opacity = Math.round(((xvalue/2.56)/100)*100)/100;
+    	        }
+            } 
+	}
+	updateStarted = false;
+}
+function ol() {
+    document.body.style.background = "rgb(255,255,255)";
+	canvas = document.getElementById('canvas');
+
+	
+	timer = setInterval(update, 15);
+    canvas.addEventListener('touchend', function() {
+    });
+    
+    canvas.addEventListener('touchmove', function(event) {
+        event.preventDefault();
+        touches = event.touches;
+    });
+    
+    canvas.addEventListener('touchstart', function(event) {
+        console.log('start');
+    });
+}; 
+</script>
+</head>
+<body onload="ol()">
+<canvas id="canvas" style="position: absolute; top:0px; left:0px; width: 100%; height: 100%; z-index:99999; opacity: 0px;"></canvas>
+<div id="top" style="position: absolute; top: 0px; left: 0px; width: 70%; height: 100%; background: FFFFFF; z-index: 2; opacity: 0.5; text-align: right;"></div> 
+<div id="mix" style="position: absolute; top: 0px; left: 0px; width: 85%; height: 100%; background: FFFFFF; z-index: 1; opacity: 0.5; text-align: right;"></div>
+<div id="p" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; text-align: right; z-index:0;"></div>
+</body>
+</html>
