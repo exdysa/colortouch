@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>colortouch blend 1.0</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+<style type="text/css">
+body { margin: 0px; overflow: hidden; }
+canvas { border: 0px solid black; }
+</style>
+<script type="text/javascript">
+var canvas;
+var w = 0;
+var h = 0;
+var timer;
+var updateStarted = false;
+var touches = [];
+function update() {
+	if (updateStarted) return;
+	updateStarted = true;
+	var nw = window.innerWidth;
+	var nh = window.innerHeight;
+
+	var i, len = touches.length;
+	for (i=0; i<len; i++) {
+		var touch = touches[i];
+        var px = touch.pageX;
+        var py = touch.pageY;
+    
+
+	    var num ="#";
+        var zer ="00";
+                var ycomp = Math.floor(nh/256);
+	            var ypos = Math.floor(nh-py);
+	            var yvalue = 2*(Math.floor(ypos/ycomp)-128);
+	
+	            var xcomp = Math.floor(nw/256);
+	            var xpos = Math.floor(nw-px);
+	            var xvalue = 2*(Math.floor(xpos/xcomp)-128);
+	            
+            if (touches.length == 1) {
+                document.getElementById('top').innerHTML = "  1";
+    		    if (yvalue > 0 && xvalue > 0) {
+    		          document.body.style.background = "rgb(" + yvalue + ",0,0)";
+    	        } else if (yvalue > 0 && xvalue <= 0) {
+    		        xvalue = Math.abs(xvalue);
+    		        document.body.style.background = "rgb(0," + yvalue + ",0)";
+    	        } else if (yvalue <= 0 && xvalue > 0) {
+    	            yvalue = Math.abs(yvalue);
+    	            document.body.style.background = "rgb(0,0," + xvalue + ")";
+    	        } else {
+    	            xvalue = Math.abs(xvalue);
+    		        document.body.style.background = "rgb(" + xvalue + "," + xvalue + "," + xvalue + ")";
+    	        }
+            } else if (touches.length == 2) {
+                document.getElementById('top').innerHTML = "<br>  2"
+        	    if (yvalue > 0 && xvalue > 0) {
+    		        document.getElementById('mix').style.background = "rgb(" + xvalue + ",0,0)";
+    	        } else if (yvalue > 0 && xvalue <= 0) {
+    		        xvalue = Math.abs(xvalue);
+    		        document.getElementById('mix').style.background = "rgb(0," + yvalue + ",0)";
+    	        } else if (yvalue <= 0 && xvalue > 0) {
+    	            yvalue = Math.abs(yvalue);
+    	            document.getElementById('mix').style.background = "rgb(0,0," + xvalue + ")";
+    	        } else {
+    	            xvalue = Math.abs(xvalue);
+    		        document.getElementById('mix').style.opacity = Math.round(((xvalue/2.56)/100)*100)/100;
+    		        document.getElementById('top').innerHTML = String(document.getElementById('mix').style.opacity);
+                }
+            } else if (touches.length == 3) {
+                document.getElementById('top').innerHTML = "<br><br>  3"
+                if (yvalue > 0 && xvalue > 0) {
+    		        document.getElementById('top').style.background = "rgb(" + yvalue + ",0,0)";
+    	        } else if (yvalue > 0 && xvalue <= 0) {
+    		        xvalue = Math.abs(xvalue);
+    		        document.getElementById('top').style.background = "rgb(0," + yvalue + ",0)";
+    	        } else if (yvalue <= 0 && xvalue > 0) {
+    	            yvalue = Math.abs(yvalue);
+    	            document.getElementById('top').style.background = "rgb(0,0" + xvalue + ")";
+    	        } else {
+    	            xvalue = Math.abs(xvalue);
+    	            document.getElementById('top').style.opacity = Math.round(((xvalue/2.56)/100)*100)/100;
+    		        document.getElementById('top').innerHTML = String(document.getElementById('top').style.opacity);
+    	        }
+            }
+	}
+	updateStarted = false;
+}
+function ol() {
+	canvas = document.getElementById("canvas");
+	top = document.getElementById('top');
+	mix = document.getElementById('mix');
+    var audio = new Audio('http://rpmchallenge.com/userplayer/645/relkrfe%20chord02.mp3');
+    var self = this;
+    //not sure if you need this, but it's better to be safe
+    self.audio = audio;
+    var startAudio = function(){
+                         self.audio.play();
+                         document.removeEventListener("touchstart", self.startAudio, false);
+                     }
+    self.startAudio = startAudio;
+    var pauseAudio = function(){
+                         self.audio.pause();
+                         self.audio.removeEventListener("play", self.pauseAudio, false);
+                     }
+    self.pauseAudio = pauseAudio;
+    self.audio.addEventListener("play", self.pauseAudio, false);
+    
+	timer = setInterval(update, 15);
+    canvas.addEventListener('touchend', function() {
+    });
+    
+    canvas.addEventListener('touchmove', function(event) {
+        event.preventDefault();
+        touches = event.touches;
+    });
+    
+    canvas.addEventListener('touchstart', function(event) {
+        console.log('start');
+        self.startAudio;
+        var touchlist = event.touches;
+        if ( touchlist.length == 4) {
+            audio.play();
+        }
+    });
+}; 
+</script>
+</head>
+<body onload="ol()" style"background: FFFFFF;">
+<canvas id="canvas" style="position: absolute; top:0px; left:0px; width: 100%; height: 100%; z-index:99999; opacity: 0px;"></canvas>
+<div id="top" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background: FFFFFF; z-index: 2; opacity: 0.5;"></div> 
+<div id="mix" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background: FFFFFF; z-index: 1; opacity: 0.5;"></div>
+</body>
+</html>
